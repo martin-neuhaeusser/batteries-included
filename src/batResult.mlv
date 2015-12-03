@@ -1,0 +1,63 @@
+##V<4.3## type ('a, 'b) t = | Ok  of 'a | Bad of 'b
+##V>=4.3## type ('a, 'b) t = ('a, 'b) result = Ok of 'a | Error of 'b
+
+##V<4.3## let catch f x = try Ok (f x) with e -> Bad e
+##V<4.3## let catch2 f x y = try Ok (f x y) with e -> Bad e
+##V<4.3## let catch3 f x y z = try Ok (f x y z) with e -> Bad e
+
+##V>=4.3## let catch f x = try Ok (f x) with e -> Error e
+##V>=4.3## let catch2 f x y = try Ok (f x y) with e -> Error e
+##V>=4.3## let catch3 f x y z = try Ok (f x y z) with e -> Error e
+
+let of_option = function
+  | Some x -> Ok x
+##V>=4.3##  | None   -> Error ()
+##V<4.3##  | None   -> Bad ()
+
+let to_option = function
+  | Ok x   -> Some x
+##V>=4.3##  | Error _-> None
+##V<4.3##  | Bad _-> None
+
+let default def = function
+  | Ok x  -> x
+##V>=4.3##  | Error _ -> def
+##V<4.3##  | Bad _ -> def
+
+let map_default def f = function
+  | Ok x -> f x
+##V>=4.3##  | Error _ -> def
+##V<4.3##  | Bad _ -> def
+
+##V>=4.3## let is_ok = function Ok _ -> true | Error _ -> false
+##V<4.3## let is_ok = function Ok _ -> true | Bad _ -> false
+
+##V>=4.3## let is_bad = function Error _ -> true | Ok _ -> false
+##V<4.3## let is_bad = function Bad _ -> true | Ok _ -> false
+
+##V>=4.3## let is_exn e = function Error exn -> exn = e | Ok _ -> false
+##V<4.3## let is_exn e = function Bad exn -> exn = e | Ok _ -> false
+
+##V>=4.3## let get = function Ok x -> x | Error e -> raise e
+##V<4.3## let get = function Ok x -> x | Bad e -> raise e
+
+let print print_val oc = function
+  | Ok x -> BatPrintf.fprintf oc "Ok(%a)" print_val x
+##V<4.3##  | Bad e -> BatPrintf.fprintf oc "Bad(%a)" BatPrintexc.print e
+##V>=4.3##  | Error e -> BatPrintf.fprintf oc "Error(%a)" BatPrintexc.print e
+
+
+module Monad = struct
+  let bind m k = match m with
+    | Ok  x      -> k x
+##V<4.3##  | Bad _ as e -> e
+##V>=4.3##  | Error _ as e -> e
+
+  let return x = Ok x
+
+  let (>>=) = bind
+end
+
+module Infix = struct
+  let (>>=) = Monad.bind
+end

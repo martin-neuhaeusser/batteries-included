@@ -263,13 +263,13 @@ module Array1 = struct
 
   let enum t =
     let offset = ofs t in
-    BatEnum.init (dim t) (fun i -> t.{offset + i})
+    BatEnum.init (dim t) (fun i -> get t (offset + i))
 
   let of_enum kind layout enum =
     let b_dim = BatEnum.count enum in
     let b = create kind layout b_dim in
     for i = ofs b to ofs b + b_dim - 1 do
-      b.{i} <- BatEnum.get_exn enum
+      set b i (BatEnum.get_exn enum)
     done;
     b
 
@@ -286,7 +286,7 @@ module Array1 = struct
     let b_dim = dim a in
     let b = create b_kind (layout a) b_dim in
     for i = ofs a to ofs a + b_dim - 1 do
-      b.{i} <- f a.{i}
+      set b i (f (get a i))
     done;
     b
 
@@ -294,7 +294,7 @@ module Array1 = struct
     let b_dim = dim a in
     let b = create b_kind (layout a) b_dim in
     for i = ofs a to ofs a + b_dim - 1 do
-      b.{i} <- f i a.{i}
+      set b i (f i (get a i))
     done;
     b
 
@@ -308,7 +308,7 @@ module Array1 = struct
       unsafe_set a i (f i (unsafe_get a i))
     done
 
-  let to_array a = Array.init (dim a) (fun i -> a.{i+(ofs a)})
+  let to_array a = Array.init (dim a) (fun i -> get a (i+(ofs a)))
 end
 module Array2 = struct
   include Bigarray.Array2
@@ -323,7 +323,7 @@ module Array2 = struct
     let b = create b_kind (layout a) b_dim1 b_dim2 in
     for i = ofs a to ofs a + b_dim1 - 1 do
       for j = ofs a to ofs a + b_dim2 - 1 do
-        b.{i, j} <- f a.{i, j}
+        set b i j (f (get a i j))
       done
     done;
     b
@@ -334,7 +334,7 @@ module Array2 = struct
     let b = create b_kind (layout a) b_dim1 b_dim2 in
     for i = ofs a to ofs a + b_dim1 - 1 do
       for j = ofs a to ofs a + b_dim2 - 1 do
-        b.{i, j} <- f i j a.{i, j}
+        set b i j (f i j (get a i j))
       done
     done;
     b
@@ -357,7 +357,7 @@ module Array2 = struct
     Array.init (dim1 a) (
       fun i ->
         Array.init (dim2 a) (
-          fun j -> a.{i + ofs a, j + ofs a}
+          fun j -> get a (i + ofs a) (j + ofs a)
         )
     )
 end
@@ -376,7 +376,7 @@ module Array3 = struct
     for i = 0 to b_dim1 - 1 do
       for j = 0 to b_dim2 - 1 do
         for k = 0 to b_dim3 - 1 do
-          b.{i, j, k} <- f a.{i, j, k}
+          set b i j k (f (get a i j k))
         done
       done
     done;
@@ -390,7 +390,7 @@ module Array3 = struct
     for i = 0 to b_dim1 - 1 do
       for j = 0 to b_dim2 - 1 do
         for k = 0 to b_dim3 - 1 do
-          b.{i, j, k} <- f i j k a.{i, j, k}
+          set b i j k (f i j k (get a i j k))
         done
       done
     done;
@@ -420,7 +420,7 @@ module Array3 = struct
         Array.init (dim2 a) (
           fun j ->
             Array.init (dim3 a) (
-              fun k -> a.{i, j, k}
+              fun k -> get a i j k
             )
         )
     )

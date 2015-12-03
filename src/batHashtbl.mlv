@@ -413,7 +413,7 @@ sig
   module Exceptionless :
   sig
     val find : 'a t -> key -> 'a option
-    val modify : key -> ('a -> 'a) -> 'a t -> (unit, exn) BatPervasives.result
+    val modify : key -> ('a -> 'a) -> 'a t -> (unit, exn) BatResult.t
   end
 
   (** Infix operators over a {!BatHashtbl} *)

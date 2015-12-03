@@ -842,9 +842,9 @@ val print :  ?first:string -> ?last:string -> ?sep:string -> ('a BatInnerIO.outp
 
     For more functions related to this type, see the {!BatResult} module.
 *)
-type ('a, 'b) result = ('a, 'b) BatInnerPervasives.result =
-  | Ok  of 'a
-  | Bad of 'b
+##V<3.4## type ('a, 'b) result = ('a, 'b) BatInnerPervasives.result =
+##V<3.4##   | Ok  of 'a
+##V<3.4##   | Bad of 'b
   (** The result of a computation - either an [Ok] with the normal
       result or a [Bad] with some value (often an exception) containing
       failure information*)
